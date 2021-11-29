@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import FilterableMedicalTreatmentList from "./FilterableMedicalTreatmentList";
 
 class MedicalTreatmentPanel extends Component {
+    //encapsulates the filterable table and provides the ability to add additional records
     constructor(props) {
         super(props);
         this.state = {
@@ -33,73 +34,71 @@ class MedicalTreatmentPanel extends Component {
             startDate: this.state.startDate,
         }
         this.setState({
-            medical_treatment_list: [...this.state.medical_treatment_list, newTreatment],
-            //now reset the other bits back to nulls
-            treatId: "",
-            treatCourseId: "",
-            type: "",
-            category: "",
-            name: "",
-            startDate: "",
+            medical_treatment_list: [...this.state.medical_treatment_list, newTreatment], //now reset the other bits back to nulls
+            treatId: "", treatCourseId: "", type: "", category: "", name: "", startDate: "",
         })
         e.preventDefault()
     }
 
     render() {
-        return (
-            <div>
-                <form onSubmit={this.handleSubmit}>
-                    <div>
-                        <input
-                            name="treatId"
-                            type="text"
-                            placeholder="1"
-                            value={this.state.treatId}
-                            onChange={this.handleChange}
-                        />
-                        <input
-                            name="treatCourseId"
-                            type="text"
-                            placeholder="2"
-                            value={this.state.treatCourseId}
-                            onChange={this.handleChange}
-                        />
-                        <input
-                            name="type"
-                            type="text"
-                            placeholder="cosmetic"
-                            value={this.state.type}
-                            onChange={this.handleChange}
-                        />
-                        <input
-                            name="category"
-                            type="text"
-                            placeholder="face"
-                            value={this.state.category}
-                            onChange={this.handleChange}
-                        />
-                        <input
-                            name="name"
-                            type="text"
-                            placeholder="face lift"
-                            value={this.state.name}
-                            onChange={this.handleChange}
-                        />
-                        <input
-                            name="startDate"
-                            type="text"
-                            placeholder="01/01/1970"
-                            value={this.state.startDate}
-                            onChange={this.handleChange}
-                        />
-                        <button>Add new medical treatment</button>
-                    </div>
-                </form>
-
-                <FilterableMedicalTreatmentList medical_treatment_headers={this.state.medical_treatment_headers}
-                                                medical_treatment_list={this.state.medical_treatment_list}/>
-            </div>
-        );
+        return (<div>
+            <form onSubmit={this.handleSubmit}>
+                <div>
+                    <input
+                        name="treatId"
+                        type="text"
+                        placeholder="1"
+                        value={this.state.treatId}
+                        onChange={this.handleChange}
+                    />
+                    <br/>
+                    <input
+                        name="treatCourseId"
+                        type="text"
+                        placeholder="2"
+                        value={this.state.treatCourseId}
+                        onChange={this.handleChange}
+                    />
+                    <br/>
+                    <input
+                        name="type"
+                        type="text"
+                        placeholder="cosmetic"
+                        value={this.state.type}
+                        onChange={this.handleChange}
+                    />
+                    <br/>
+                    <input
+                        name="category"
+                        type="text"
+                        placeholder="face"
+                        value={this.state.category}
+                        onChange={this.handleChange}
+                    />
+                    <br/>
+                    <input
+                        name="name"
+                        type="text"
+                        placeholder="face lift"
+                        value={this.state.name}
+                        onChange={this.handleChange}
+                    />
+                    <br/>
+                    <input
+                        name="startDate"
+                        type="text"
+                        placeholder="01/01/1970"
+                        value={this.state.startDate}
+                        onChange={this.handleChange}
+                    />
+                    <br/>
+                    <button>Add new medical treatment</button>
+                </div>
+            </form>
+            <br/>
+            <FilterableMedicalTreatmentList medical_treatment_headers={this.state.medical_treatment_headers}
+                                            medical_treatment_list={this.state.medical_treatment_list}/>
+        </div>);
     }
 }
 
