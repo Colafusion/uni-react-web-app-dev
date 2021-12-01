@@ -20,11 +20,12 @@ class MedicalTreatmentPanel extends Component {
     }
 
     handleChange(e) {
-        this.setState({[e.target.name]: e.target.value})
+        this.setState({[e.target.name]: e.target.value}) //[] allow us to set the state name dynamically based on the input "name" field
 
     }
 
     handleSubmit(e) {
+        //new treatment variables combined into one json obj
         let newTreatment = {
             treatId: this.state.treatId,
             treatCourseId: this.state.treatCourseId,
@@ -34,68 +35,31 @@ class MedicalTreatmentPanel extends Component {
             startDate: this.state.startDate,
         }
         this.setState({
-            medical_treatment_list: [...this.state.medical_treatment_list, newTreatment], //now reset the other bits back to nulls
-            treatId: "", treatCourseId: "", type: "", category: "", name: "", startDate: "",
+            medical_treatment_list: [...this.state.medical_treatment_list, newTreatment], //merge the new treatment with the others
+            treatId: "", treatCourseId: "", type: "", category: "", name: "", startDate: "", //set the other bits back to empty strings
         })
-        e.preventDefault()
+        e.preventDefault() // prevent a refresh
     }
 
     render() {
         return (<div>
             <form onSubmit={this.handleSubmit}>
+                {/*
+                dynamically render the input boxes, one for each header (as it should be)
+                The value is updated via the handleChange event handler
+                */}
                 <div>
-                    <input
-                        name="treatId"
-                        type="text"
-                        placeholder="1"
-                        value={this.state.treatId}
-                        onChange={this.handleChange}
-                    />
-                    <br/>
-                    <input
-                        name="treatCourseId"
-                        type="text"
-                        placeholder="2"
-                        value={this.state.treatCourseId}
-                        onChange={this.handleChange}
-                    />
-                    <br/>
-                    <input
-                        name="type"
-                        type="text"
-                        placeholder="cosmetic"
-                        value={this.state.type}
-                        onChange={this.handleChange}
-                    />
-                    <br/>
-                    <input
-                        name="category"
-                        type="text"
-                        placeholder="face"
-                        value={this.state.category}
-                        onChange={this.handleChange}
-                    />
-                    <br/>
-                    <input
-                        name="name"
-                        type="text"
-                        placeholder="face lift"
-                        value={this.state.name}
-                        onChange={this.handleChange}
-                    />
-                    <br/>
-                    <input
-                        name="startDate"
-                        type="text"
-                        placeholder="01/01/1970"
-                        value={this.state.startDate}
-                        onChange={this.handleChange}
-                    />
-                    <br/>
+                    {this.state.medical_treatment_headers.map(header => <input name={header} type="text"
+                                                                               placeholder={header}
+                                                                               value={this.state[{header}]}
+                                                                               onChange={this.handleChange}/>)}
                     <button>Add new medical treatment</button>
                 </div>
             </form>
             <br/>
+            {/*
+            pass the updated treatment list, it'll automatically rerender
+            */}
             <FilterableMedicalTreatmentList medical_treatment_headers={this.state.medical_treatment_headers}
                                             medical_treatment_list={this.state.medical_treatment_list}/>
         </div>);
