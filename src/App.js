@@ -1,4 +1,3 @@
-import './App.css';
 import MedicalTreatment from './components/MedicalTreatment';
 import React, {Component} from 'react';
 import MedicalTreatmentList from "./components/MedicalTreatmentList";

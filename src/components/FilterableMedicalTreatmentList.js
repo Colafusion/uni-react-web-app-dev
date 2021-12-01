@@ -7,13 +7,13 @@ class FilterableMedicalTreatmentList extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            filterText: '',
+            filterText: '', //set to empty str at first
         };
 
-        this.handleFilterTextChange = this.handleFilterTextChange.bind(this);
+        this.handleSearchBarTextChange = this.handleSearchBarTextChange.bind(this);
     }
 
-    handleFilterTextChange(filterText) {
+    handleSearchBarTextChange(filterText) {
         this.setState({
             filterText: filterText
         });
@@ -22,16 +22,16 @@ class FilterableMedicalTreatmentList extends Component {
     render() {
         const medical_treatment_headers = this.props.medical_treatment_headers
         const medical_treatment_list = this.props.medical_treatment_list
-        return (
-            <div>
-                <SearchBar
-                    filterText={this.state.filterText}
-                    onFilterTextChange={this.handleFilterTextChange}
-                />
-                <MedicalTreatmentList headers={medical_treatment_headers}
-                                      array={medical_treatment_list.filter(medical_treatment => medical_treatment.category.toLowerCase().includes(this.state.filterText.toLowerCase()))}/>
-            </div>
-        )
+        //this filters the medical treatments based on search bar input. case-insensitive
+        const filtered_medical_treatment_list = medical_treatment_list.filter(medical_treatment => medical_treatment.category.toLowerCase().includes(this.state.filterText.toLowerCase()))
+        return (<div>
+            <SearchBar
+                filterText={this.state.filterText}
+                onFilterTextChange={this.handleSearchBarTextChange}
+            />
+            <MedicalTreatmentList headers={medical_treatment_headers}
+                                  array={filtered_medical_treatment_list}/>
+        </div>)
     }
 }
 

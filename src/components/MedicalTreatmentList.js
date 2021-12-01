@@ -6,8 +6,7 @@ class MedicalTreatmentList extends Component {
     render() {
         const headers = this.props.headers
         const array = this.props.array
-        return (
-            <table>
+        return (<table>
                 <tr>
                     {headers.map(header => <th style={{"text-align": "center"}}>{header}</th>)}
                 </tr>

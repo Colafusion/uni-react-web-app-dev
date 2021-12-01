@@ -5,7 +5,7 @@ class MedicalTreatmentPanel extends Component {
     //encapsulates the filterable table and provides the ability to add additional records
     constructor(props) {
         super(props);
-        this.state = {
+        this.state = { //copy over the medical treatment props into state and set everything else to empty strings
             medical_treatment_headers: props.medical_treatment_headers,
             medical_treatment_list: props.medical_treatment_list,
             treatId: "",
