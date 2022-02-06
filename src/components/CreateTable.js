@@ -1,7 +1,7 @@
 import React, {Component} from "react";
-import MedicalTreatment from "./MedicalTreatment";
+import SingleRow from "./SingleRow";
 
-class MedicalTreatmentList extends Component {
+class CreateTable extends Component {
     //used for each table
     render() {
         const headers = this.props.headers
@@ -10,11 +10,11 @@ class MedicalTreatmentList extends Component {
                 <tr>
                     {headers.map(header => <th style={{"text-align": "center"}}>{header}</th>)}
                 </tr>
-                {array.map(val => <MedicalTreatment medical_treatment={val}/>)}
+                {array.map(val => <SingleRow row_val={val}/>)}
             </table>
 
         )
     }
 }
 
-export default MedicalTreatmentList;
+export default CreateTable;

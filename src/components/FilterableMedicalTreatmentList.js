@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import MedicalTreatmentList from "./MedicalTreatmentList";
+import CreateTable from "./CreateTable";
 import SearchBar from "./SearchBar"
 
 class FilterableMedicalTreatmentList extends Component {
@@ -29,8 +29,8 @@ class FilterableMedicalTreatmentList extends Component {
                 filterText={this.state.filterText}
                 onFilterTextChange={this.handleSearchBarTextChange}
             />
-            <MedicalTreatmentList headers={medical_treatment_headers}
-                                  array={filtered_medical_treatment_list}/>
+            <CreateTable headers={medical_treatment_headers}
+                         array={filtered_medical_treatment_list}/>
         </div>)
     }
 }
