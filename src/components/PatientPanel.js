@@ -38,7 +38,6 @@ function PatientPanel() {
                 statusCodes: [413]
             }
         }).json();
-        alert(JSON.stringify(json))
         //we expect server data to be in a list of dictionary format, hence this.
         //for the first set value (headers) we grab the keys of the first object in the list
         set_value_1(Object.keys(json.data[0]));
@@ -128,13 +127,14 @@ function PatientPanel() {
             </div>
 
         </form>
+        <h2>Filtered treatment list</h2>
         {filtered_treatment_headers &&
             <FilterableMedicalTreatmentList
                 medical_treatment_headers={filtered_treatment_headers}
                 medical_treatment_list={filtered_treatment_data}/>
 
         }
-        <h2>Treatment list (refresh to clear filter)</h2>
+        <h1>Treatment list</h1>
 
         <FilterableMedicalTreatmentList
             medical_treatment_headers={treatment_headers}
