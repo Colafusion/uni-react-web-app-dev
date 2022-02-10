@@ -25,10 +25,8 @@ class FilterableMedicalTreatmentList extends Component {
         //this filters the medical treatments based on search bar input. case-insensitive
         const filtered_medical_treatment_list = medical_treatment_list.filter(medical_treatment => medical_treatment.category.toLowerCase().includes(this.state.filterText.toLowerCase()))
         return (<div>
-            <SearchBar
-                filterText={this.state.filterText}
-                onFilterTextChange={this.handleSearchBarTextChange}
-            />
+            Category: <SearchBar filterText={this.state.filterText}
+                                 onFilterTextChange={this.handleSearchBarTextChange}/>
             <CreateTable headers={medical_treatment_headers}
                          array={filtered_medical_treatment_list}/>
         </div>)

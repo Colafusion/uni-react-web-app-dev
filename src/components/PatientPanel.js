@@ -1,101 +1,149 @@
-import axios from "axios";
-import React, {Component} from 'react';
+import ky from "ky";
+import React, {useEffect, useState} from 'react';
 import CreateTable from "./CreateTable";
+import FilterableMedicalTreatmentList from "./FilterableMedicalTreatmentList";
 
-class PatientPanel extends Component {
-    //encapsulates the filterable table and provides the ability to add additional records
-    constructor(props) {
-        super(props);
-        this.state = { //copy over the medical treatment props into state and set everything else to empty strings
-            treatId: "",
-            treatCourseId: "",
-            type: "",
-            category: "",
-            name: "",
-            startDate: "",
-            patient_headers: "",
-            patient_data: "",
-            external_data: ""
-        }
-        this.handleChange = this.handleChange.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
-        this.fetchRecords = this.fetchRecords.bind(this);
-        this.fetchPatientRecords = this.fetchPatientRecords.bind(this)
-    }
+function PatientPanel() {
+    const [patient_headers, set_patient_headers] = useState(null);
+    const [patient_data, set_patient_data] = useState(null);
+    const [treatment_headers, set_treatment_headers] = useState(null);
+    const [treatment_data, set_treatment_data] = useState(null);
+    const [filtered_treatment_headers, filtered_set_treatment_headers] = useState(null);
+    const [filtered_treatment_data, filtered_set_treatment_data] = useState(null);
+    const [new_patient_data, add_new_patient] = useState({});
+    const [patient_filter_data, set_patient_filter_data] = useState({});
+    useEffect(() => {
+        //fetch the initial data, [] means it only triggers once - not on each rerender
+        fetchData('patients/', set_patient_headers, set_patient_data)
+        fetchData('medical_treatments/', set_treatment_headers, set_treatment_data)
 
-    componentDidMount() {
-        this.fetchRecords('patients/')
-    }
+    }, [])
 
-    componentDidUpdate(prevProps, prevState, snapshot) {
-        this.fetchRecords('patients/')
-    }
-
-    async fetchRecords(args) {
-        const response = await axios.get('http://localhost:8080/' + args)
-        if (response.status === 200) {
-            this.setState({
-                patient_headers: JSON.stringify(response.data.data[0].keys),
-                patient_data: JSON.stringify(response.data.data)
-            })
-            alert(JSON.stringify(response.data.data))
-        }
-    }
-
-
-    fetchPatientRecords() {
-        this.fetchRecords('patients/')
-
+    function handleNewPatientChange(e) {
+        new_patient_data[e.target.name] = e.target.value //[] allow us to set the state name dynamically based on the input "name" field
 
     }
 
-    handleChange(e) {
-        this.setState({[e.target.name]: e.target.value}) //[] allow us to set the state name dynamically based on the input "name" field
+    function handleTreatmentFilterChange(e) {
+        patient_filter_data[e.target.name] = e.target.value //[] allow us to set the state name dynamically based on the input "name" field
 
     }
 
-    handleSubmit(e) {
-        //new treatment variables combined into one json obj
-        let newTreatment = {
-            treatId: this.state.treatId,
-            treatCourseId: this.state.treatCourseId,
-            type: this.state.type,
-            category: this.state.category,
-            name: this.state.name,
-            startDate: this.state.startDate,
-        }
-        this.setState({
-            patient_list: [...this.state.patient_list, newTreatment], //merge the new treatment with the others
-            treatId: "", treatCourseId: "", type: "", category: "", name: "", startDate: "", //set the other bits back to empty strings
-        })
-        e.preventDefault() // prevent a refresh
+    const fetchData = async (args, set_value_1, set_value_2) => {
+        //fetch the data with retry options
+        const json = await ky.get('http://localhost:8080/' + args, {
+            retry: {
+                limit: 10,
+                methods: ['get'],
+                statusCodes: [413]
+            }
+        }).json();
+        alert(JSON.stringify(json))
+        //we expect server data to be in a list of dictionary format, hence this.
+        //for the first set value (headers) we grab the keys of the first object in the list
+        set_value_1(Object.keys(json.data[0]));
+        //then set the list itself as value 2 (data)
+        set_value_2(json.data);
+
+
+    }
+    const pushPatientData = async (args) => {
+        //pushes patient data to remote, .json() returning any response as a json obj, automatically completing the .then() cycle internally
+        const json = await ky.post('http://localhost:8080/patients', {json: args}).json();
+        console.log(JSON.stringify(json))
+        alert(JSON.stringify(json))
+
     }
 
-    render() {
-        this.fetchRecords('patients/')
-        return (
+    function handleNewPatientSubmit() {
+        //pushes patient data to server before setting new_patient_data to an empty dictionary
+        pushPatientData(new_patient_data)
+        add_new_patient({})
+
+    }
+
+    function handleFilterPatientSubmit(e) {
+        //form query - e.g. http://localhost:8080/patients/search?patient_id=1&first_name=Howard
+        //maps the filter option dictionary and turns each one into key=value, before joining them with &.
+        const form_url = "/medical_treatments/search?" + Object.keys(patient_filter_data).map(key => `${key}=${patient_filter_data[key]}`).join('&')
+        fetchData(form_url, filtered_set_treatment_headers, filtered_set_treatment_data) //fetch the data
+        e.preventDefault(); //stop a fresh
+        set_patient_filter_data(null) //return our filter query to null
+
+    }
+
+
+    //series of if false checks (as the default state is null) - used to force return of fetched data
+    if (!patient_headers) {
+        return null
+    }
+    if (!patient_data) {
+        return null;
+    }
+
+    if (!treatment_headers) {
+        return null;
+    }
+    if (!treatment_data) {
+        return null;
+    }
+
+
+    return (< div>
+        <h1>Add patient</h1>
+        <form onSubmit={handleNewPatientSubmit}>
+
             <div>
-                {this.state.patient_headers}
-                {this.state.patient_data}
-                {this.state.external_data}
-                <CreateTable headers={this.state.patient_headers}
-                             array={this.state.patient_data}/>
-                {/*<form onSubmit={this.handleSubmit}>*/}
-                {/*    <div>*/}
-                {/*        {this.state.patient_headers.map(header => <input name={header} type="text"*/}
-                {/*                                                         placeholder={header}*/}
-                {/*                                                         value={this.state[{header}]}*/}
-                {/*                                                         onChange={this.handleChange}/>)}*/}
-                {/*        <button>Add new medical treatment</button>*/}
-                {/*    </div>*/}
-                {/*</form>*/}
-                {/*<br/>*/}
 
-                {/*<FilterableMedicalTreatmentList patient_headers={this.state.patient_headers}*/}
-                {/*                                patient_list={this.state.patient_list}/>*/}
+                {patient_headers.map(header => <input name={header} type="text"
 
-            </div>);
-    }
+                                                      placeholder={header}
+
+                                                      value={new_patient_data[header]}
+
+                                                      onChange={handleNewPatientChange}/>)}
+
+                <button>Add new patient</button>
+            </div>
+        </form>
+        <h2>List patient data</h2>
+        <CreateTable headers={patient_headers}
+                     array={patient_data}/>
+
+        <h1>Filter patient treatments</h1>
+        <form onSubmit={handleFilterPatientSubmit}>
+
+            <div>
+
+                {patient_headers.map(header => <input name={header} type="text"
+
+                                                      placeholder={header}
+
+                                                      value={patient_filter_data[header]}
+
+                                                      onChange={handleTreatmentFilterChange}/>)}
+
+                <button>Filter patients</button>
+
+            </div>
+
+        </form>
+        {filtered_treatment_headers &&
+            <FilterableMedicalTreatmentList
+                medical_treatment_headers={filtered_treatment_headers}
+                medical_treatment_list={filtered_treatment_data}/>
+
+        }
+        <h2>Treatment list (refresh to clear filter)</h2>
+
+        <FilterableMedicalTreatmentList
+            medical_treatment_headers={treatment_headers}
+            medical_treatment_list={treatment_data}/>
+
+
+    </div>);
+
 }
+
 
 export default PatientPanel;
